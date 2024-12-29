@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Table Viewer and Updater</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #343a40;
+        }
+
+        .card {
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        thead th {
+            background-color: #343a40;
+            color: white;
+            padding: 10px;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f3f5;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #e9ecef;
+        }
+
+        tbody td {
+            padding: 8px;
+        }
+
+        .alert {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">SQL Table Viewer and Updater</h1>
+
+        <?php
+        // Database credentials
+        $host = 'localhost';
+        $username = 'root';
+        $password = '';
+        $database = 'epi_vaccination';
+
+        // Connect to the database
+        $conn = new mysqli($host, $username, $password, $database);
+
+        // Check connection
+        if ($conn->connect_error) {
+            die("<div class='alert alert-danger'>Connection failed: " . $conn->connect_error . "</div>");
+        }
+
+        // Handle form submission to insert data into the 'Child' table
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_child'])) {
+            $child_id = $_POST['child_id'];  // Child ID input field
+            $child_name = $_POST['child_name'];
+            $dob = $_POST['dob'];
+            $address = $_POST['address'];
+            $guardian_name = $_POST['guardian_name'];
+            $contact_no = $_POST['contact_no'];
+        
+            $stmt = $conn->prepare("INSERT INTO Child (child_id, name, dob, age, address, guardian_name, contact_no) 
+                                    VALUES (?, ?, ?, TIMESTAMPDIFF(YEAR, ?, CURDATE()), ?, ?, ?)");
+            $stmt->bind_param("sssssss", $child_id, $child_name, $dob, $dob, $address, $guardian_name, $contact_no);
+        
+            if ($stmt->execute()) {
+                echo "<div class='alert alert-success'>Child added successfully!</div>";
+            } else {
+                echo "<div class='alert alert-danger'>Error: " . $stmt->error . "</div>";
+            }
+        
+            $stmt->close();
+        }
+        
+        ?>
+
+        <!-- Form to input data into the 'Child' table -->
+        <div class="card mt-4">
+            <div class="card-header">Add New Child</div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="child_id" class="form-label">Child ID</label>
+                        <input type="text" class="form-control" id="child_id" name="child_id" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="child_name" class="form-label">Child Name</label>
+                        <input type="text" class="form-control" id="child_name" name="child_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="dob" class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" id="dob" name="dob" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="age" class="form-label">Age</label>
+                        <input type="number" class="form-control" id="age" name="age">
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="address" name="address" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="guardian_name" class="form-label">Guardian Name</label>
+                        <input type="text" class="form-control" id="guardian_name" name="guardian_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contact_no" class="form-label">Contact Number</label>
+                        <input type="text" class="form-control" id="contact_no" name="contact_no" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" name="add_child">Add Child</button>
+                </form>
+            </div>
+        </div>
+
+        <?php
+        // List of tables to show
+        $tables = ['Child', 'Healthcare_Professional', 'Vaccination_Centre', 'Vaccination_Record', 'Vaccine'];
+
+        foreach ($tables as $tableName) {
+            echo "<h3 class='mt-5'>" . htmlspecialchars($tableName) . " Table</h3>";
+
+            // Fetch data from the table
+            $dataResult = $conn->query("SELECT * FROM $tableName");
+
+            if (!$dataResult) {
+                echo "<div class='alert alert-danger'>Error fetching data for table '$tableName': " . $conn->error . "</div>";
+            } elseif ($dataResult->num_rows > 0) {
+                echo "<table class='table table-bordered table-striped mt-4'>
+                        <thead>
+                            <tr>";
+                // Display column headers
+                $fields = $dataResult->fetch_fields();
+                foreach ($fields as $field) {
+                    echo "<th>" . htmlspecialchars($field->name) . "</th>";
+                }
+                echo "</tr>
+                        </thead>
+                        <tbody>" ;
+
+                // Display table rows
+                while ($row = $dataResult->fetch_assoc()) {
+                    echo "<tr>";
+                    foreach ($row as $cell) {
+                        echo "<td>" . htmlspecialchars($cell) . "</td>";
+                    }
+                    echo "</tr>";
+                }
+                echo "</tbody>
+                    </table>";
+            } else {
+                echo "<div class='alert alert-warning'>No data found in the table '$tableName'.</div>";
+            }
+        }
+
+        // Close the connection
+        $conn->close();
+        ?>
+    </div>
+</body>
+</html>
