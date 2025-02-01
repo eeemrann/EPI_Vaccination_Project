@@ -85,3 +85,4 @@ INSERT INTO Vaccination (record_id, child_id, vaccine_id, healthcare_professiona
 (1000004, 6, 100000002, 700001, 1000002, '2024-12-22', '2024-12-31'), 
 (1000005, 7, 100000001, 800001, 1000001, '2024-12-23', '2024-12-31'), 
 (1000006, 8, 100000002, 800001, 1000002, '2024-12-24', '2024-12-31');
+ALTER TABLE Vaccination ADD COLUMN dose_number INT DEFAULT 1;
