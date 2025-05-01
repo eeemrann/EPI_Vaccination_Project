@@ -1,4 +1,5 @@
-#EPI_Vaccination_Database_System
+🩺 EPI Vaccination Database System
+
 This project is a database-driven application designed to manage and monitor vaccination records under the Expanded Programme on Immunization (EPI). The system ensures secure, organized, and real-time tracking of immunization data, which can be used by healthcare authorities to streamline vaccination efforts, especially in under-served or rural areas.
 
 🎯 Objective:
