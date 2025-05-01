@@ -25,6 +25,7 @@ Role-based access (Admin vs Data Entry)
 
 
 
+
 🛠️ Technologies Used:
 
 Frontend: HTML, CSS, JavaScript (optional)
@@ -35,9 +36,11 @@ Database: MySQL (via XAMPP or WAMP)
 
 Optional: Leaflet.js / Google Maps API for GIS mapping
 
+
 🔐 Future Enhancement (Research-Oriented):
 
 This system is being developed further into a Blockchain-Integrated SQL Database for tamper-proof vaccination records, ensuring higher security and trust—especially useful for national and international health organizations.
+
 
 🚀 How to Run:
 
