@@ -1,4 +1,4 @@
-# 🩺 EPI Vaccination Database System
+# 🩺 EPI Vaccination Database System.
 
 A database-driven application designed to manage and monitor vaccination records under the **Expanded Programme on Immunization (EPI)**. This system ensures secure, organized, and real-time tracking of immunization data — helping healthcare authorities streamline vaccination efforts, especially in rural or underserved regions.
 
